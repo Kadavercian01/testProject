@@ -1,6 +1,10 @@
 package test.view.newentity;
 
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import io.jmix.core.DataManager;
@@ -29,6 +33,9 @@ import java.util.UUID;
 @DialogMode(width = "50em")
 public class NewEntityListView extends StandardListView<NewEntity> {
 
+    protected static final String ATTRIBUTE_JMIX_ROLE_VALUE = "jmix-dropdown-button";
+    protected static final String ATTRIBUTE_JMIX_ROLE_NAME = "jmix-role";
+
     @Autowired
     protected DataManager dataManager;
     @Autowired
@@ -47,16 +54,19 @@ public class NewEntityListView extends StandardListView<NewEntity> {
         return list;
     }
 
+
+
     @Supply(to = "newEntitiesDataGrid.contextMenu", subject = "renderer")
     public Renderer<NewEntity> trafficsDataGridContextMenuRenderer() {
         return new ComponentRenderer<>((NewEntity trafficRequest) -> {
-            DropdownButton dropdownButton = uiComponents.create(DropdownButton.class);
-            dropdownButton.setIcon(VaadinIcon.ELLIPSIS_DOTS_V.create());
-            dropdownButton.addItem("read", "test",
-                    (DropdownButtonItem.ClickEvent listener) ->
-                    notifications.create("test")
-                            .show());
-            return dropdownButton;
+            MenuBar menuBar = new MenuBar();
+            menuBar.getElement().setAttribute(ATTRIBUTE_JMIX_ROLE_NAME, ATTRIBUTE_JMIX_ROLE_VALUE);
+            MenuItem rootItem = menuBar.addItem("");
+            rootItem.add(VaadinIcon.ELLIPSIS_DOTS_V.create(), new Icon("lumo", "dropdown"));
+            SubMenu subMenu = rootItem.getSubMenu();
+            subMenu.addItem("text", __ -> notifications.create("test")
+                    .show());
+            return menuBar;
         });
     }
 }
